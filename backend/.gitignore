@@ -1,0 +1,84 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+ENV/
+.conda/
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+
+# FastAPI / Django-like local secrets
+.env
+.env.*
+!.env.example
+*.sqlite3
+*.db
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytype/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+
+# Build / distribution
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+site/
+
+# Node / React
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.parcel-cache/
+.cache/
+.next/
+out/
+coverage/
+dist/
+dist-ssr/
+*.local
+
+# IDE / editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Optional: local uploads / generated media
+uploads/
+media/
+generated/
