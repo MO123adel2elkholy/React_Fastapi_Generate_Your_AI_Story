@@ -83,7 +83,7 @@ class StoryGenerator:
             session_id: Session identifier associated with the story.
             theme: Main story idea or user prompt used to guide the model.
 
-        Returns:
+        Returns:a
             Story: The created parent story object persisted in the database.
 
         Workflow:
