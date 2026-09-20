@@ -1,31 +1,59 @@
+import json
 from typing import List
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings
-from pydantic import field_validator
-import os
+
 
 class Settings(BaseSettings):
     API_PREFIX: str = "/api"
     DEBUG: bool = False
 
-    DATABASE_URL: str = None
+    DATABASE_URL: str = "sqlite:///./database.db"
+    DB_USER: str | None = None
+    DB_PASSWORD: str | None = None
+    DB_HOST: str | None = None
+    DB_PORT: str | int | None = None
+    DB_NAME: str | None = None
 
-    ALLOWED_ORIGINS: str = ""
-
+    ALLOWED_ORIGINS: List[str] = []
     OPENAI_API_KEY: str
 
-    def __init__(self, **values):
-        super().__init__(**values)
-        if not self.DEBUG:
-            db_user = os.getenv("DB_USER")
-            db_password = os.getenv("DB_PASSWORD")
-            db_host = os.getenv("DB_HOST")
-            db_port = os.getenv("DB_PORT")
-            db_name = os.getenv("DB_NAME")
-            self.DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-    #  this for vladiting the allowed origins came from the .env file 
-    @field_validator("ALLOWED_ORIGINS")
-    def parse_allowed_origins(cls, v: str) -> List[str]:
-        return v.split(",") if v else []
+    @field_validator("ALLOWED_ORIGINS", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v) -> List[str]:
+        if v is None or v == "":
+            return []
+        if isinstance(v, str):
+            try:
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    return [str(origin).strip() for origin in parsed if str(origin).strip()]
+            except json.JSONDecodeError:
+                pass
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v or []
+
+    @model_validator(mode="after")
+    def build_database_url(self):
+        if self.DATABASE_URL and self.DATABASE_URL != "sqlite:///./database.db":
+            return self
+
+        if self.DEBUG:
+            self.DATABASE_URL = "sqlite:///./database.db"
+            return self
+
+        required = [self.DB_USER, self.DB_PASSWORD, self.DB_HOST, self.DB_PORT, self.DB_NAME]
+        if all(required):
+            self.DATABASE_URL = (
+                f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@"
+                f"{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            )
+            return self
+
+        raise ValueError(
+            "Production database not configured. Set DATABASE_URL or "
+            "DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME."
+        )
 
     class Config:
         env_file = ".env"
