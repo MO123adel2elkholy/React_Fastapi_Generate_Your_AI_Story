@@ -64,6 +64,7 @@ class StoryGenerator:
 
         # If the app is configured to use a custom OpenAI-compatible service,
         # prefer that endpoint instead of the default public API endpoint.
+        # use openAI Buitlt in Choreo Service 
         if openai_api_key and serviceurl:
             return ChatOpenAI(
                 model="gpt-4o-mini",
